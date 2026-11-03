@@ -29,15 +29,38 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: 'gradle'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK Platform 36 & Build-Tools 35.0.0
+      - name: Configure Android SDK (API 35 & 36)
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-35" "platforms;android-36" "build-tools;35.0.0" "platform-tools"
+          export ANDROID_SDK_ROOT="${ANDROID_HOME:-$HOME/android-sdk}"
+          if [ ! -w "$ANDROID_SDK_ROOT" ]; then
+            export ANDROID_SDK_ROOT="$HOME/android-sdk"
+          fi
+          mkdir -p "$ANDROID_SDK_ROOT"
+
+          SDKMANAGER=""
+          if [ -x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          elif [ -x "/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager" ] && [ -w "/usr/local/lib/android/sdk" ]; then
+            export ANDROID_SDK_ROOT="/usr/local/lib/android/sdk"
+            SDKMANAGER="/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager"
+          else
+            echo "Downloading Google Android Command-Line Tools..."
+            curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdtools.zip
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            unzip -q /tmp/cmdtools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+            rm -rf "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            rm -f /tmp/cmdtools.zip
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-35" "platforms;android-36" "build-tools;35.0.0" "platform-tools"
+
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          printf "sdk.dir=%s\n" "$ANDROID_SDK_ROOT" > android/local.properties
 
       - name: Install dependencies and sync Capacitor Android project
         run: |
@@ -47,26 +70,21 @@ jobs:
 
       - name: Ensure Release Upload Keystore & Signing Config
         run: |
+          mkdir -p android/app
           if [ ! -f "android/app/upload-keystore.jks" ]; then
             echo "Restoring upload-keystore.jks..."
             echo "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" | base64 -d > android/app/upload-keystore.jks
           fi
-          if [ ! -f "android/keystore.properties" ]; then
-            cat << 'EOF' > android/keystore.properties
-          storeFile=upload-keystore.jks
-          storePassword=OnRoadPriz@2026#Prod
-          keyAlias=onroadpriz-upload
-          keyPassword=OnRoadPriz@2026#Prod
-          EOF
-          fi
+          printf "storeFile=upload-keystore.jks\nstorePassword=OnRoadPriz@2026#Prod\nkeyAlias=onroadpriz-upload\nkeyPassword=OnRoadPriz@2026#Prod\n" > android/keystore.properties
 
       - name: Build Signed Android App Bundle (.aab) & Release APK (.apk)
         working-directory: android
-        env:
-          GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8"
         run: |
+          sed -i 's/org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8/' gradle.properties
+          sed -i 's/org.gradle.parallel=false/org.gradle.parallel=true/' gradle.properties
+          sed -i 's/org.gradle.workers.max=1/org.gradle.workers.max=4/' gradle.properties
           chmod +x ./gradlew
-          ./gradlew bundleRelease assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8"
+          ./gradlew bundleRelease assembleRelease --no-daemon
           jarsigner -verify -verbose -certs app/build/outputs/bundle/release/app-release.aab | head -n 20
           cp -f app/build/outputs/bundle/release/app-release.aab OnRoadPriz-v1.0.0-release.aab
           cp -f app/build/outputs/apk/release/app-release.apk OnRoadPriz-v1.0.0-release.apk

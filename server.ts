@@ -2630,51 +2630,54 @@ async function startServer() {
     });
   }
 
-  try {
-    await DbService.seedIfEmpty();
-    await AuthService.syncFromDatabase();
-    await SecretsManager.init();
-
-    // Always restore authoritative site settings from Cloud SQL so republishing never reverts admin settings
-    const dbSettings = await DbService.getSiteSettings();
-    if (dbSettings && typeof dbSettings === 'object') {
-      fs.writeFileSync(
-        SETTINGS_FILE_PATH,
-        JSON.stringify({ ...DEFAULT_GLOBAL_SETTINGS, ...dbSettings }, null, 2),
-        'utf-8'
-      );
-    }
-
-    // Always restore contact submissions from Cloud SQL
-    const dbContacts = await DbService.getContactSubmissions();
-    if (Array.isArray(dbContacts)) {
-      fs.writeFileSync(
-        CONTACT_SUBMISSIONS_FILE_PATH,
-        JSON.stringify(dbContacts, null, 2),
-        'utf-8'
-      );
-    }
-
-    // Restore any uploaded branding assets from Cloud SQL into uploadsDir
-    const brandingAssets = await DbService.getBrandingAssets();
-    for (const [assetPath, dataUrl] of Object.entries(brandingAssets)) {
-      const matches = typeof dataUrl === 'string' ? dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/) : null;
-      if (matches && matches.length === 3) {
-        const filename = path.basename(assetPath);
-        const dest = path.join(uploadsDir, filename);
-        if (!fs.existsSync(dest)) {
-          fs.writeFileSync(dest, Buffer.from(matches[2], 'base64'));
-        }
-      }
-    }
-  } catch (seedErr) {
-    console.error('[CloudSQL] Pre-boot seeding warning:', seedErr);
-  }
-
   app.listen(port, '0.0.0.0', () => {
     console.log(`[OnRoadPriz] Enterprise Server running at http://0.0.0.0:${port}`);
     console.log(`[OnRoadPriz] Vehicle Verification Provider: ${vehicleLookupProvider.name} (Configured: ${vehicleLookupProvider.isConfigured()})`);
-    console.log('[OnRoadPriz] Cloud SQL Database: Active and Connected');
+
+    // Run Cloud SQL seeding and state restoration asynchronously so port 3000 is available immediately
+    (async () => {
+      try {
+        await DbService.seedIfEmpty();
+        await AuthService.syncFromDatabase();
+        await SecretsManager.init();
+
+        // Always restore authoritative site settings from Cloud SQL so republishing never reverts admin settings
+        const dbSettings = await DbService.getSiteSettings();
+        if (dbSettings && typeof dbSettings === 'object') {
+          fs.writeFileSync(
+            SETTINGS_FILE_PATH,
+            JSON.stringify({ ...DEFAULT_GLOBAL_SETTINGS, ...dbSettings }, null, 2),
+            'utf-8'
+          );
+        }
+
+        // Always restore contact submissions from Cloud SQL
+        const dbContacts = await DbService.getContactSubmissions();
+        if (Array.isArray(dbContacts)) {
+          fs.writeFileSync(
+            CONTACT_SUBMISSIONS_FILE_PATH,
+            JSON.stringify(dbContacts, null, 2),
+            'utf-8'
+          );
+        }
+
+        // Restore any uploaded branding assets from Cloud SQL into uploadsDir
+        const brandingAssets = await DbService.getBrandingAssets();
+        for (const [assetPath, dataUrl] of Object.entries(brandingAssets)) {
+          const matches = typeof dataUrl === 'string' ? dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/) : null;
+          if (matches && matches.length === 3) {
+            const filename = path.basename(assetPath);
+            const dest = path.join(uploadsDir, filename);
+            if (!fs.existsSync(dest)) {
+              fs.writeFileSync(dest, Buffer.from(matches[2], 'base64'));
+            }
+          }
+        }
+        console.log('[OnRoadPriz] Cloud SQL Database: Active and Connected');
+      } catch (seedErr) {
+        console.error('[CloudSQL] Pre-boot seeding warning:', seedErr);
+      }
+    })();
   });
 }
 
