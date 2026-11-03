@@ -1,0 +1,16 @@
+{
+	"appId": "in.brandorigin.onroadpriz",
+	"appName": "OnRoadPriz",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https",
+		"cleartext": false,
+		"allowNavigation": [
+			"onroadpriz.com",
+			"*.onroadpriz.com",
+			"brandorigin.in",
+			"*.run.app"
+		]
+	},
+	"android": {}
+}

@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'onroadpriz@admin.com' ||
+        request.auth.token.email == 'gowisherharsha@gmail.com' ||
+        request.auth.token.email == 'aibrandorigin@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 2. Vehicles Collection (Marketplace Listings)
+    match /vehicles/{vehicleId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 3. Wishlists Collection
+    match /wishlists/{wishlistId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 4. Enquiries Collection (Buyer Leads & Chats)
+    match /enquiries/{enquiryId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 5. Orders Collection (Subscriptions & Passes)
+    match /orders/{orderId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 6. Banners Collection (Promotional Assets)
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 7. Blogs Collection (Articles & Buying Guides)
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 8. Site Settings Collection (Branding & Global Config)
+    match /site_settings/{settingsId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 9. Master Data Collections (Categories, Brands, Models)
+    match /master_data/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 10. Test Connection Collection (Required by Firebase skill)
+    match /test/{testId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Catch-all safety fallback
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

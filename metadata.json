@@ -1,0 +1,8 @@
+{
+  "name": "Remix OnRoadPriz - Used Vehicle Marketplace",
+  "description": "India\u0027s premier direct owner-to-buyer used vehicle marketplace featuring comprehensive vehicle listings, advanced search filters, seller plans, verification, lead management, and an enterprise admin portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

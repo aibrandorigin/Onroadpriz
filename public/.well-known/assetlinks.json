@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.brandorigin.onroadpriz",
+      "sha256_cert_fingerprints": [
+        "21:7E:7B:06:39:51:27:B6:F2:05:B8:91:4D:AB:96:80:B9:65:D9:7C:F4:E8:82:F7:1B:15:10:A4:B2:1A:E8:02"
+      ]
+    }
+  }
+]

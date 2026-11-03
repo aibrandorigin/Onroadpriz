@@ -1,0 +1,18 @@
+{
+  "secrets": {
+    "SMS_CHANNEL": "Trans",
+    "SMS_ROUTE": "02"
+  },
+  "metadata": {
+    "SMS_CHANNEL": {
+      "lastUpdated": "2026-10-09T05:53:57.084Z",
+      "updatedBy": "TestRunner"
+    },
+    "SMS_ROUTE": {
+      "lastUpdated": "2026-10-09T05:53:57.084Z",
+      "updatedBy": "TestRunner"
+    }
+  },
+  "lastUpdated": "2026-10-09T05:53:57.084Z",
+  "updatedBy": "TestRunner"
+}

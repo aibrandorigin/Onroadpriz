@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-maroon-primary: #77101F;
+    --color-maroon-dark: #5E0B17;
+    --color-maroon-deep: #660C19;
+    --color-bg-page: #F7F9FC;
+    --color-surface-light: #F5F7FA;
+    --color-border-card: #DCE3EC;
+    --color-text-primary: #101828;
+    --color-text-secondary: #667085;
+    --color-text-muted: #98A2B3;
+    --color-accent-success: #087F5B;
+    --color-accent-gold: #F59E0B;
+  }
+
+  body {
+    background-color: #F7F9FC;
+    color: #101828;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif;
+  }
+}
+
+/* Custom Trussets Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7F9FC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DCE3EC;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #98A2B3;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-full-width {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

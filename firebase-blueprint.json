@@ -1,0 +1,192 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile record for buyers, sellers, and administrators",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "fullName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "role": { "type": "string", "enum": ["Buyer", "Seller", "Admin", "user", "admin", "Super Admin", "Moderator"] },
+        "status": { "type": "string", "enum": ["Active", "Suspended", "Blocked", "active", "blocked"] },
+        "city": { "type": "string", "maxLength": 100 },
+        "state": { "type": "string", "maxLength": 100 },
+        "pincode": { "type": "string", "maxLength": 10 },
+        "createdAt": { "type": "string", "maxLength": 40 },
+        "updatedAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "phone", "role"]
+    },
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "Vehicle listing on OnRoadPriz marketplace",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "maxLength": 80 },
+        "brand": { "type": "string", "maxLength": 80 },
+        "model": { "type": "string", "maxLength": 80 },
+        "variant": { "type": "string", "maxLength": 80 },
+        "year": { "type": "number" },
+        "registrationYear": { "type": "number" },
+        "rtoState": { "type": "string", "maxLength": 100 },
+        "rtoCity": { "type": "string", "maxLength": 100 },
+        "registrationNumber": { "type": "string", "maxLength": 30 },
+        "price": { "type": "number" },
+        "kmDriven": { "type": "number" },
+        "fuelType": { "type": "string", "maxLength": 50 },
+        "transmission": { "type": "string", "maxLength": 50 },
+        "bodyType": { "type": "string", "maxLength": 50 },
+        "ownership": { "type": "string", "maxLength": 50 },
+        "color": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["Published", "Pending Approval", "Draft", "Sold", "Rejected", "active", "sold"] },
+        "sellerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 40 },
+        "updatedAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "title", "price", "status"]
+    },
+    "WishlistItem": {
+      "title": "WishlistItem",
+      "description": "Saved vehicle favorite for an authenticated buyer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "vehicleId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "userId", "vehicleId"]
+    },
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "Buyer lead or enquiry on a vehicle listing",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "vehicleId": { "type": "string", "maxLength": 128 },
+        "vehicleTitle": { "type": "string", "maxLength": 200 },
+        "sellerId": { "type": "string", "maxLength": 128 },
+        "buyerId": { "type": "string", "maxLength": 128 },
+        "buyerName": { "type": "string", "maxLength": 100 },
+        "buyerPhone": { "type": "string", "maxLength": 20 },
+        "buyerEmail": { "type": "string", "maxLength": 150 },
+        "message": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "vehicleId", "buyerPhone"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Subscription or feature pack payment order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "planId": { "type": "string", "maxLength": 64 },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Success", "Pending", "Failed"] },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "userId", "planId", "amount", "status"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Marketplace promotional banner",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "section": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 150 },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "targetUrl": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["Active", "Inactive"] },
+        "displayOrder": { "type": "number" }
+      },
+      "required": ["id", "name", "imageUrl"]
+    },
+    "Blog": {
+      "title": "Blog",
+      "description": "Marketplace editorial articles and guides",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 250 },
+        "slug": { "type": "string", "maxLength": 250 },
+        "category": { "type": "string", "maxLength": 100 },
+        "excerpt": { "type": "string", "maxLength": 500 },
+        "content": { "type": "string" },
+        "status": { "type": "string", "enum": ["Published", "Draft", "Archived"] },
+        "publishedAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "title", "slug"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Platform global configuration and metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "siteName": { "type": "string", "maxLength": 100 },
+        "tagline": { "type": "string", "maxLength": 200 },
+        "supportPhone": { "type": "string", "maxLength": 30 },
+        "supportEmail": { "type": "string", "maxLength": 100 },
+        "updatedAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "siteName"]
+    },
+    "TestConnection": {
+      "title": "TestConnection",
+      "description": "Heartbeat verification document",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "maxLength": 30 },
+        "timestamp": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user account profiles"
+    },
+    "/vehicles/{vehicleId}": {
+      "schema": "Vehicle",
+      "description": "Marketplace vehicle listings"
+    },
+    "/wishlists/{wishlistId}": {
+      "schema": "WishlistItem",
+      "description": "Saved vehicle wishlist items per user"
+    },
+    "/enquiries/{enquiryId}": {
+      "schema": "Enquiry",
+      "description": "Buyer enquiries on listed vehicles"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Buyer and seller payment transactions"
+    },
+    "/banners/{bannerId}": {
+      "schema": "Banner",
+      "description": "Promotional banner advertisements"
+    },
+    "/blogs/{blogId}": {
+      "schema": "Blog",
+      "description": "Articles, buying tips, and resale guides"
+    },
+    "/site_settings/{settingsId}": {
+      "schema": "SiteSettings",
+      "description": "Global website configuration settings"
+    },
+    "/test/{testId}": {
+      "schema": "TestConnection",
+      "description": "Firebase Firestore connection verification documents"
+    }
+  }
+}
